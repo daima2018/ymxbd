@@ -8,5 +8,6 @@ object RealTimeApp1 {
 		val df: DataFrame = ss.sql("select * from ymx.ods_order_info")
 		df.show()
 		df.count
+		println("dfsdfsd")
 	}
 }
