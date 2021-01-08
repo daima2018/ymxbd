@@ -11,6 +11,7 @@
   <modules>
     <module>ymx-rt</module>
     <module>ymx-kf</module>
+    <module>ymx-offline</module>
   </modules>
 
   <name>ymxbd</name>
