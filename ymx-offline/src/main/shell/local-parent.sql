@@ -100,41 +100,41 @@ select
      ,c.parent_asin as asin            --
      ,sum(c.qty)                       -- '销售数量',
      ,'' as summary_date               -- '统计日期',
-     ,sum(sale_amount)                 -- '销售额(本位币)',
-     ,sum(sale_amount_usd)             -- '销售额美元',
-     ,sum(sale_amount_eur)             -- '销售额欧元',
-     ,sum(sale_amount_gbp)             -- '销售额英镑',
-     ,sum(sale_amount_jpy)             -- '销售额日元',
-     ,sum(sale_amount_original)        -- '销售额（站点原始金额）',
+     ,sum(c.sale_amount)                 -- '销售额(本位币)',
+     ,sum(c.sale_amount_usd)             -- '销售额美元',
+     ,sum(c.sale_amount_eur)             -- '销售额欧元',
+     ,sum(c.sale_amount_gbp)             -- '销售额英镑',
+     ,sum(c.sale_amount_jpy)             -- '销售额日元',
+     ,sum(c.sale_amount_original)        -- '销售额（站点原始金额）',
      ,date_format(current_timestamp(),'yyyy-MM-dd HH:mm:ss') as created_time         -- '创建时间',
      ,date_format(current_timestamp(),'yyyy-MM-dd HH:mm:ss') as updated_time         -- '更新时间',
-     ,sum(sale_order_num  )            -- '订单数',
-     ,sum(refund_amount   )            -- '退款listing个数',
-     ,sum(refund_money    )            -- '退款金额(站点币种)',
-     ,sum(refund_money_usd)            -- '退款金额美元',
-     ,sum(refund_money_eur)            -- '退款金额欧元',
-     ,sum(refund_money_gbp)            -- '退款金额英镑',
-     ,sum(refund_money_jpy)            -- '退款金额日元',
-     ,sum(refund_money_local)          -- '退款金额(本位币)',
+     ,sum(c.sale_order_num  )            -- '订单数',
+     ,sum(c.refund_amount   )            -- '退款listing个数',
+     ,sum(c.refund_money    )            -- '退款金额(站点币种)',
+     ,sum(c.refund_money_usd)            -- '退款金额美元',
+     ,sum(c.refund_money_eur)            -- '退款金额欧元',
+     ,sum(c.refund_money_gbp)            -- '退款金额英镑',
+     ,sum(c.refund_money_jpy)            -- '退款金额日元',
+     ,sum(c.refund_money_local)          -- '退款金额(本位币)',
      ,md5(concat(c.user_account,c.parent_asin)) as key1   --父asin没有seller_sku     -- 'user_account+asin+seller_sku 的MD5值',
-     ,sum(return_amount)                                  -- '退货数',
+     ,sum(c.return_amount)                                  -- '退货数',
      ,3 as asin_type                                      -- '0未确定, 子asin:1，独立产品:2, 父asin3',
-     ,sum(ad_qty)                  -- '广告销售数量',
-     ,sum(ad_sale_amount)          -- '广告销售额(本位币)',
-     ,sum(ad_sale_amount_usd     ) -- '广告销售额美元',
-     ,sum(ad_sale_amount_eur     ) -- '广告销售额欧元',
-     ,sum(ad_sale_amount_gbp     ) -- '广告销售额英镑',
-     ,sum(ad_sale_amount_jpy     ) -- '广告销售额日元',
-     ,sum(ad_sale_order_num      ) -- '广告订单数',
-     ,sum(ad_sale_amount_original) -- '广告销售额（站点原始金额）',
-     ,sum(cost                   ) -- '广告花费(站点币种)',
-     ,sum(cost_local   )           -- '广告花费(本位币)',
-     ,sum(cost_usd     )     
-     ,sum(cost_eur     )     
-     ,sum(cost_gbp     )     
-     ,sum(cost_jpy     )     
-     ,sum(clicks       )                              -- '广告访问次数,也即广告点击数'
-     ,sum(impressions  )                              -- 广告曝光量
+     ,sum(c.ad_qty)                  -- '广告销售数量',
+     ,sum(c.ad_sale_amount)          -- '广告销售额(本位币)',
+     ,sum(c.ad_sale_amount_usd     ) -- '广告销售额美元',
+     ,sum(c.ad_sale_amount_eur     ) -- '广告销售额欧元',
+     ,sum(c.ad_sale_amount_gbp     ) -- '广告销售额英镑',
+     ,sum(c.ad_sale_amount_jpy     ) -- '广告销售额日元',
+     ,sum(c.ad_sale_order_num      ) -- '广告订单数',
+     ,sum(c.ad_sale_amount_original) -- '广告销售额（站点原始金额）',
+     ,sum(c.cost                   ) -- '广告花费(站点币种)',
+     ,sum(c.cost_local   )           -- '广告花费(本位币)',
+     ,sum(c.cost_usd     )     
+     ,sum(c.cost_eur     )     
+     ,sum(c.cost_gbp     )     
+     ,sum(c.cost_jpy     )     
+     ,sum(c.clicks       )                              -- '广告访问次数,也即广告点击数'
+     ,sum(c.impressions  )                              -- 广告曝光量
      ,nvl(h.sessions             ,0) as sessions                 -- 访客次数
      ,nvl(h.page_views           ,0) as page_views               --浏览次数
      ,nvl(h.buy_box_percentage   ,0) as buy_box_percentage       --  buy_box_percentage
