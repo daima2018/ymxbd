@@ -96,7 +96,8 @@ D:
 select                                                                                                          
      c.user_account                                           -- '店铺账号'                                                                                                   
     ,c.site                                                   --  '站点'                                                                                          
-    ,c.seller_sku                                             --                                                                                                  
+    ,c.seller_sku                                             --
+    ,c.parent_asin            --在结果集可以去掉该字段
     ,c.asin                                                   --                                                                                            
     ,d.sale_amount as qty                                     -- '销售数量',                                                                                              
     ,'' as summary_date                                           -- '统计日期',                                                                                                    
