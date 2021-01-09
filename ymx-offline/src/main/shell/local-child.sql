@@ -1,92 +1,96 @@
 C:
-select 
-     ttt1.site
-    ,ttt1.user_account
-    ,ttt1.asin
-    ,ttt1.seller_sku    
-    ,ttt1.asin_type
-    ,ttt1.currency_site   
-    ,ttt1.currency_local 
-    ,min(case when ttt1.currency_site = ttt1.currency_local then 1 
-          when ttt1.currency_local= ttt2.crrd_currency_code then ttt2.crrd_currency_rate
-     end)  as local_rate 
-    ,min(case when ttt2.crrd_currency_code='USD' then ttt2.ccrd_currency_rate end) as usd_rate
-    ,min(case when ttt2.crrd_currency_code='EUR' then ttt2.ccrd_currency_rate end) as eur_rate
-    ,min(case when ttt2.crrd_currency_code='GBP' then ttt2.ccrd_currency_rate end) as gbp_rate
-    ,min(case when ttt2.crrd_currency_code='JPY' then ttt2.ccrd_currency_rate end) as jpy_rate
-from (select
-          tt1.site
-           ,tt1.user_account
-           ,tt2.asin1            as asin
-           ,tt2.seller_sku
-           ,1 as asin_type
-           ,tt1.currency_site
-           ,tt1.currency_local
-      from (select
-                t2.site
-                 ,t1.user_account
-                 ,t1.asin
-                 ,t1.seller_sku
-                 ,t1.is_parent
-                 ,t2.currency_code currency_site   --站点币种
-                 ,t3.currency_local                --本位币
-            from ec_amazon_parent_listing t1
-                     left join ec_platform_user t2
-                               on t1.user_account = t2.user_account
-                     left join ec_company t3
-                               on t1.company_code = t3.company_code
-            where t1.company_code != null and t1.company_code != 'A20080135'
-           ) tt1 join ec_amazon_get_merchant_listings_data tt2
-                      on tt1.is_parent=1
-                          and tt2.parent_asin != tt2.asin1
-                          and tt2.item_status='on_sale'
-                          and tt1.user_account=tt2.user_account
-                          and tt1.asin=tt2.parent_asin
-
-      union all
-
-      select
-          tt1.site
-           ,tt1.user_account
-           ,tt1.asin
-           ,tt1.seller_sku
-           ,2 as asin_type
-           ,tt1.currency_site
-           ,tt1.currency_local
-      from (select
-                t2.site
-                 ,t1.user_account
-                 ,t1.asin
-                 ,t1.seller_sku
-                 ,t1.is_parent
-                 ,t2.currency_code currency_site   --站点币种
-                 ,t3.currency_local                --本位币
-            from ec_amazon_parent_listing t1
-                     left join ec_platform_user t2
-                               on t1.user_account = t2.user_account
-                     left join ec_company t3
-                               on t1.company_code = t3.company_code
-            where t1.company_code != null and t1.company_code != 'A20080135'
-           ) tt1
-      where tt1.is_parent!=1
-) ttt1 left join (
     select
-        a.crr_local  --本位币
-         ,b.crrd_currency_code  --币种
-         ,b.crrd_currency_rate  --汇率
-    from ec_currency_rate_rule a
-             left join ec_currency_rate_rule_detail b
-                       on a.crr_id=b.crr_id
-    where a.crr_date=''
-) ttt2                --汇率有多条会发散,聚合取一条
-on ttt1.currency_site = ttt2.crr_local
-group by  ttt1.site
-        ,ttt1.user_account
-        ,ttt1.asin
-        ,ttt1.seller_sku    
-        ,ttt1.asin_type
-        ,ttt1.currency_site   
-        ,ttt1.currency_local 
+        ttt1.site
+         ,ttt1.user_account
+         ,ttt1.parent_asin
+         ,ttt1.asin
+         ,ttt1.seller_sku
+         ,ttt1.asin_type
+         ,ttt1.currency_site
+         ,ttt1.currency_local
+         ,min(case when ttt1.currency_site = ttt1.currency_local then 1
+                   when ttt1.currency_local= ttt2.crrd_currency_code then ttt2.crrd_currency_rate
+        end)  as local_rate
+         ,min(case when ttt2.crrd_currency_code='USD' then ttt2.ccrd_currency_rate end) as usd_rate
+         ,min(case when ttt2.crrd_currency_code='EUR' then ttt2.ccrd_currency_rate end) as eur_rate
+         ,min(case when ttt2.crrd_currency_code='GBP' then ttt2.ccrd_currency_rate end) as gbp_rate
+         ,min(case when ttt2.crrd_currency_code='JPY' then ttt2.ccrd_currency_rate end) as jpy_rate
+    from (select
+              tt1.site
+               ,tt1.user_account
+               ,tt1.asin   as parent_asin
+               ,tt2.asin1            as asin
+               ,tt2.seller_sku
+               ,1 as asin_type
+               ,tt1.currency_site
+               ,tt1.currency_local
+          from (select
+                    t2.site
+                     ,t1.user_account
+                     ,t1.asin
+                     ,t1.seller_sku
+                     ,t1.is_parent
+                     ,t2.currency_code currency_site   --站点币种
+                     ,t3.currency_local                --本位币
+                from ec_amazon_parent_listing t1
+                         left join ec_platform_user t2
+                                   on t1.user_account = t2.user_account
+                         left join ec_company t3
+                                   on t1.company_code = t3.company_code
+                where t1.company_code != null and t1.company_code != 'A20080135'
+               ) tt1 join ec_amazon_get_merchant_listings_data tt2
+                          on tt1.is_parent=1
+                              and tt2.parent_asin != tt2.asin1
+                              and tt2.item_status='on_sale'
+                              and tt1.user_account=tt2.user_account
+                              and tt1.asin=tt2.parent_asin
+
+          union all
+
+          select
+              tt1.site
+               ,tt1.user_account
+               ,tt1.asin   as parent_asin
+               ,tt1.asin
+               ,tt1.seller_sku
+               ,2 as asin_type
+               ,tt1.currency_site
+               ,tt1.currency_local
+          from (select
+                    t2.site
+                     ,t1.user_account
+                     ,t1.asin
+                     ,t1.seller_sku
+                     ,t1.is_parent
+                     ,t2.currency_code currency_site   --站点币种
+                     ,t3.currency_local                --本位币
+                from ec_amazon_parent_listing t1
+                         left join ec_platform_user t2
+                                   on t1.user_account = t2.user_account
+                         left join ec_company t3
+                                   on t1.company_code = t3.company_code
+                where t1.company_code != null and t1.company_code != 'A20080135'
+               ) tt1
+          where tt1.is_parent!=1
+         ) ttt1 left join (
+        select
+            a.crr_local  --本位币
+             ,b.crrd_currency_code  --币种
+             ,b.crrd_currency_rate  --汇率
+        from ec_currency_rate_rule a
+                 left join ec_currency_rate_rule_detail b
+                           on a.crr_id=b.crr_id
+        where a.crr_date=''
+    ) ttt2                --汇率有多条会发散,聚合取一条
+                          on ttt1.currency_site = ttt2.crr_local      --会导致数据倾斜
+    group by  ttt1.site
+           ,ttt1.user_account
+           ,ttt1.parent_asin
+           ,ttt1.asin
+           ,ttt1.seller_sku
+           ,ttt1.asin_type
+           ,ttt1.currency_site
+           ,ttt1.currency_local
 
 D:
 select                                                                                                          
